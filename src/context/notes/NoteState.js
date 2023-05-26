@@ -15,15 +15,13 @@ const NoteState = (props) => {
         'Content-Type': 'application/json',
         'auth-token':
           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjQ0ZDVmNGUwNzIyMzQyYjYyYzdkMTkxIn0sImlhdCI6MTY4Mjc5NTE0Nn0.A8wsLO8YR1QX_-6WWJUCt3-S5VyZX60iABKPZh-Dsas',
-      }
+      },
     });
-    const json = await response.json()
-    console.log(json)
-    setNotes(json)
+    const json = await response.json();
+    setNotes(json);
   };
 
-
-  // Add a note
+  // Add a Note
   const addNote = async (title, description, tag) => {
     // TODO: API Call
     // API Call
@@ -34,58 +32,64 @@ const NoteState = (props) => {
         'auth-token':
           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjQ0ZDVmNGUwNzIyMzQyYjYyYzdkMTkxIn0sImlhdCI6MTY4Mjc5NTE0Nn0.A8wsLO8YR1QX_-6WWJUCt3-S5VyZX60iABKPZh-Dsas',
       },
-      body: JSON.stringify({title, description, tag}),
+      body: JSON.stringify({ title, description, tag }),
     });
-    console.log('Adding a new note');
-    const note = {
-      _id: '644e176d11d1360542y8a187b',
-      user: '644d5f4e0722342b62c7d191',
-      title: title,
-      description: description,
-      tag: tag,
-      date: '2023-04-30T07:23:25.104Z',
-      __v: 0,
-    };
+
+    const note = await response.json();
     setNotes(notes.concat(note));
   };
 
-  // Delete a note
-  const deleteNote = (id) => {
-    // TODO: API Call
-    console.log('Deleting the note with id' + id);
+  // Delete a Note
+  const deleteNote = async (id) => {
+    // API Call
+    const response = await fetch(`${host}/api/notes/deletenote/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'auth-token':
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjQ0ZDVmNGUwNzIyMzQyYjYyYzdkMTkxIn0sImlhdCI6MTY4Mjc5NTE0Nn0.A8wsLO8YR1QX_-6WWJUCt3-S5VyZX60iABKPZh-Dsas',
+      },
+    });
+    const json = await response.json();
     const newNotes = notes.filter((note) => {
       return note._id !== id;
     });
     setNotes(newNotes);
   };
 
-  // Edit a note
+  // Edit a Note
   const editNote = async (id, title, description, tag) => {
     // API Call
     const response = await fetch(`${host}/api/notes/updatenote/${id}`, {
-      method: 'POST',
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'auth-token':
           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjQ0ZDVmNGUwNzIyMzQyYjYyYzdkMTkxIn0sImlhdCI6MTY4Mjc5NTE0Nn0.A8wsLO8YR1QX_-6WWJUCt3-S5VyZX60iABKPZh-Dsas',
       },
-      body: JSON.stringify({title, description, tag}),
+      body: JSON.stringify({ title, description, tag }),
     });
-    const json = response.json();
+    const json = await response.json();
+
+    let newNotes = JSON.parse(JSON.stringify(notes));
 
     // Logic to edit in client
-    for (let index = 0; index < notes.length; index++) {
-      const element = notes[index];
+    for (let index = 0; index < newNotes.length; index++) {
+      const element = newNotes[index];
       if (element._id === id) {
-        element.title = title;
-        element.description = description;
-        element.tag = tag;
+        newNotes[index].title = title;
+        newNotes[index].description = description;
+        newNotes[index].tag = tag;
+        break;
       }
     }
+    setNotes(newNotes);
   };
 
   return (
-    <NoteContext.Provider value={{ notes, addNote, deleteNote, editNote, getNotes }}>
+    <NoteContext.Provider
+      value={{ notes, addNote, deleteNote, editNote, getNotes }}
+    >
       {props.children}
     </NoteContext.Provider>
   );
