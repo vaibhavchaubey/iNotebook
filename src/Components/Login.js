@@ -2,7 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
+const Login = (props) => {
   const [credentials, setCredentials] = useState({ email: '', password: '' });
   const navigate = useNavigate();
 
@@ -24,9 +24,10 @@ const Login = () => {
       // Save the auth token and redirect
       localStorage.setItem('token', json.authtoken);
       navigate('/');
+      props.showAlert('Logged in Successfully', 'success');
     } else {
-      alert('Invalid credentials');
-     }
+      props.showAlert('Invalid Details', 'danger');
+    }
   };
 
   const onChange = (e) => {
@@ -34,7 +35,7 @@ const Login = () => {
   };
 
   return (
-    <div className='contianer'>
+    <div className="contianer">
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label htmlFor="email" className="form-label">
